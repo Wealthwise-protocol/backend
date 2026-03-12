@@ -32,6 +32,7 @@ public class AuthService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     @Transactional
     public Map<String, Object> signup(SignUpRequest request) {
@@ -134,6 +135,7 @@ public class AuthService {
                 .build();
 
             passwordResetTokenRepository.save(token);
+            emailService.sendPasswordResetEmail(user.getEmail(), token.getToken());
         });
     }
 
