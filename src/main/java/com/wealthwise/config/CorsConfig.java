@@ -11,14 +11,11 @@ public class CorsConfig implements WebMvcConfigurer {
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
 
-    @Value("${cors.allowed-methods}")
-    private String allowedMethods;
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(allowedOrigins.split(","))
-                .allowedMethods(allowedMethods.split(","))
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
                 .allowedHeaders(
                         "Authorization",
                         "Content-Type",
@@ -26,12 +23,11 @@ public class CorsConfig implements WebMvcConfigurer {
                         "Origin",
                         "X-Requested-With",
                         "Access-Control-Request-Method",
-                        "Access-Control-Request-Headers"
+                        "Access-Control-Request-Headers",
+                        "Cache-Control"
                 )
                 .exposedHeaders("Authorization")
                 .allowCredentials(true)
                 .maxAge(3600);
     }
 }
-
-
