@@ -57,9 +57,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allow all origins from the property (split by comma)
-        Arrays.stream(allowedOrigins.split(","))
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
               .map(String::trim)
-              .forEach(origin -> configuration.addAllowedOrigin(origin));
+              .toList();
+        configuration.setAllowedOriginPatterns(origins);
 
         // Allow all methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
