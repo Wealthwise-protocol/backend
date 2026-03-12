@@ -1,34 +1,78 @@
 # WealthWise Backend
 
-User Authentication and User Management module for Spring Boot 4 + Java 17.
+Spring Boot 4 + Java 17 REST API for the WealthWise Investment Management System.
 
-## What is included
+## Tech Stack
 
-- JWT-based auth (`/auth/signup`, `/auth/signin`, protected endpoints)
-- User profile management (`/auth/me`, `/auth/profile`, `/auth/change-password`, `/auth/account`)
-- Password reset flow (`/auth/forgot-password`, `/auth/reset-password`)
+- Java 17
+- Spring Boot 4
+- Spring Security + JWT (jjwt 0.12.6)
+- Spring Data JPA + Hibernate
+- PostgreSQL (Neon)
+- Lombok
 - BCrypt password hashing
-- UUID primary keys and PostgreSQL-ready JPA mappings
 
-## Configuration
+## Modules
 
-Set these values in `src/main/resources/application.properties` or environment variables:
+| Module | Branch | Status |
+|--------|--------|--------|
+| User Auth & Management | `feature/user-auth-module` | ✅ Done |
+| Portfolio | `feature/portfolio-module` | ⏳ Pending |
+| Investment | `feature/investment-module` | ⏳ Pending |
+| Reports | `feature/reports-module` | ⏳ Pending |
 
-- `security.jwt.secret` (must be a strong secret)
-- `security.jwt.expiration-ms` (default `86400000`)
+## API Endpoints
 
-## Quick run
+Base URL (local): `http://localhost:9095`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/auth/signup` | ❌ | Register new user |
+| POST | `/auth/signin` | ❌ | Login |
+| POST | `/auth/signout` | ✅ | Logout |
+| GET | `/auth/me` | ✅ | Get current user |
+| PATCH | `/auth/profile` | ✅ | Update profile |
+| POST | `/auth/change-password` | ✅ | Change password |
+| POST | `/auth/forgot-password` | ❌ | Request reset token |
+| POST | `/auth/reset-password` | ❌ | Reset password |
+| DELETE | `/auth/account` | ✅ | Delete account |
+
+## Local Setup
+
+### Prerequisites
+- Java 17+
+- Maven
+
+### Run locally
 
 ```bash
-./mvnw clean test
+git clone https://github.com/Wealthwise-protocol/backend.git
+cd backend
+git checkout feature/user-auth-module
 ./mvnw spring-boot:run
 ```
 
-## Auth header format
+Server starts on `http://localhost:9095`
 
-Use JWT in request headers for protected routes:
+## Environment Variables
 
-```text
-Authorization: Bearer <jwt-token>
-```
+| Variable | Description |
+|----------|-------------|
+| `PORT` | Server port (default `9095` local, `8080` on Render) |
+| `DB_URL` | PostgreSQL JDBC URL |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `JWT_SECRET` | JWT signing secret (min 32 chars) |
+| `JWT_EXPIRATION_MS` | Token expiry in ms (default `86400000` = 24h) |
+| `CORS_ALLOWED_ORIGINS` | Allowed frontend origins |
 
+## Deployment
+
+Deployed on **Render** using Docker.  
+See `render.yaml` for config.
+
+## Branch Strategy
+
+Each module lives in its own feature branch.  
+Never push directly to `main`.  
+Open a PR when your module is complete.
