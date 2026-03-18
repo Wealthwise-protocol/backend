@@ -22,19 +22,19 @@ public class Fund {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "scheme_code", nullable = false)
+    @Column(name = "scheme_code")
     private Integer schemeCode;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String name;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String amc;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String category;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String subcategory;
 
     @Column(columnDefinition = "TEXT")
@@ -72,7 +72,7 @@ public class Fund {
     @Column(name = "category_avg", columnDefinition = "jsonb")
     private Map<String, BigDecimal> categoryAvg;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
