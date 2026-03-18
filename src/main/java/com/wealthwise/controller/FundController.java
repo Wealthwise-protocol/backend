@@ -38,7 +38,7 @@ public class FundController {
 
     @GetMapping("/{id}/nav-history")
     public ResponseEntity<NavHistoryResponse> getNavHistory(
-        @PathVariable String id,
+        @PathVariable UUID id,
         @RequestParam(defaultValue = "1Y") String period
     ) {
         return ResponseEntity.ok(fundService.getNavHistory(id, period));
@@ -46,7 +46,7 @@ public class FundController {
 
     @PostMapping("/{id}/invest")
     public ResponseEntity<SuccessResponse> invest(
-        @PathVariable String id,
+        @PathVariable UUID id,
         @Valid @RequestBody InvestFundRequest request,
         Authentication authentication
     ) {

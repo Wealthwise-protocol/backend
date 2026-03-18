@@ -1,10 +1,11 @@
 package com.wealthwise.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import java.util.UUID;
 
 @Data
 public class FundDetailsRequest {
-    @NotBlank(message = "Fund id is required")
-    private String id;
+    @NotNull(message = "Fund id is required")
+    private UUID id;
 }

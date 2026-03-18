@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface FundNavHistoryRepository extends JpaRepository<FundNavHistory, UUID> {
 
     @Query("SELECT fnh FROM FundNavHistory fnh WHERE fnh.fund.id = :fundId AND fnh.date >= :startDate ORDER BY fnh.date ASC")
-    List<FundNavHistory> findByFundIdAndDateAfter(@Param("fundId") String fundId, @Param("startDate") LocalDate startDate);
+    List<FundNavHistory> findByFundIdAndDateAfter(@Param("fundId") UUID fundId, @Param("startDate") LocalDate startDate);
 
-    boolean existsByFundIdAndDate(String fundId, LocalDate date);
+    boolean existsByFundIdAndDate(UUID fundId, LocalDate date);
 }

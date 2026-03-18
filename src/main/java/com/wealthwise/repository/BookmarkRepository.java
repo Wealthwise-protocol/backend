@@ -15,11 +15,11 @@ import java.util.UUID;
 public interface BookmarkRepository extends JpaRepository<Bookmark, UUID> {
 
     @Query("SELECT b.fund.id FROM Bookmark b WHERE b.user.id = :userId")
-    List<String> findFundIdsByUserId(@Param("userId") UUID userId);
+    List<UUID> findFundIdsByUserId(@Param("userId") UUID userId);
 
-    Optional<Bookmark> findByUserIdAndFundId(UUID userId, String fundId);
+    Optional<Bookmark> findByUserIdAndFundId(UUID userId, UUID fundId);
 
     @Modifying
     @Transactional
-    void deleteByUserIdAndFundId(UUID userId, String fundId);
+    void deleteByUserIdAndFundId(UUID userId, UUID fundId);
 }

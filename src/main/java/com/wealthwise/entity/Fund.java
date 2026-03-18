@@ -2,8 +2,12 @@ package com.wealthwise.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name = "funds")
@@ -15,73 +19,66 @@ import java.time.LocalDateTime;
 public class Fund {
 
     @Id
-    @Column(length = 50)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "scheme_code", nullable = false)
+    private Integer schemeCode;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String name;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String amc;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String category;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String subcategory;
+
+    @Column(columnDefinition = "TEXT")
     private String risk;
-
-    @Column(precision = 15, scale = 4)
-    private BigDecimal nav;
-
-    @Column(name = "nav_change", precision = 15, scale = 4)
-    private BigDecimal navChange;
-
-    @Column(name = "nav_change_percent", precision = 10, scale = 2)
-    private BigDecimal navChangePercent;
-
-    @Column(name = "return_1y", precision = 10, scale = 2)
-    private BigDecimal return1y;
-
-    @Column(name = "return_3y", precision = 10, scale = 2)
-    private BigDecimal return3y;
-
-    @Column(name = "return_5y", precision = 10, scale = 2)
-    private BigDecimal return5y;
-
-    @Column(name = "category_avg_1y", precision = 10, scale = 2)
-    private BigDecimal categoryAvg1y;
-
-    @Column(name = "category_avg_3y", precision = 10, scale = 2)
-    private BigDecimal categoryAvg3y;
-
-    @Column(name = "category_avg_5y", precision = 10, scale = 2)
-    private BigDecimal categoryAvg5y;
-
-    @Column(name = "min_sip", precision = 15, scale = 2)
-    private BigDecimal minSip;
-
-    @Column(name = "min_lumpsum", precision = 15, scale = 2)
-    private BigDecimal minLumpsum;
-
-    @Column(precision = 15, scale = 2)
-    private BigDecimal aum;
-
-    @Column(name = "expense_ratio", precision = 10, scale = 2)
-    private BigDecimal expenseRatio;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal nav;
+
+    @Column(name = "nav_change", precision = 10, scale = 2)
+    private BigDecimal navChange;
+
+    @Column(name = "nav_change_percent", precision = 5, scale = 2)
+    private BigDecimal navChangePercent;
+
+    @Column(columnDefinition = "TEXT")
+    private String aum;
+
+    @Column(name = "expense_ratio", precision = 5, scale = 2)
+    private BigDecimal expenseRatio;
+
+    @Column(name = "min_sip")
+    private Integer minSip;
+
+    @Column(name = "min_lumpsum")
+    private Integer minLumpsum;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, BigDecimal> returns;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "category_avg", columnDefinition = "jsonb")
+    private Map<String, BigDecimal> categoryAvg;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 }

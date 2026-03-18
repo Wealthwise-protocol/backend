@@ -44,8 +44,8 @@ public class FundService {
             return apiResults.stream()
                 .limit(10)
                 .map(result -> {
-                    String schemeCode = (String) result.get("id");
-                    Fund fund = fundRepository.findById(schemeCode)
+                    Integer schemeCode = Integer.parseInt((String) result.get("id"));
+                    Fund fund = fundRepository.findBySchemeCode(schemeCode)
                         .orElseGet(() -> fetchAndSaveFund(schemeCode));
                     return toFundResponse(fund);
                 })
@@ -57,19 +57,15 @@ public class FundService {
     }
 
     @Transactional
-    public FundResponse getFundDetails(String id) {
+    public FundResponse getFundDetails(UUID id) {
         Fund fund = fundRepository.findById(id)
-            .orElseGet(() -> fetchAndSaveFund(id));
-        
-        if (fund == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found");
-        }
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
         
         return toFundResponse(fund);
     }
 
     @Transactional(readOnly = true)
-    public NavHistoryResponse getNavHistory(String fundId, String period) {
+    public NavHistoryResponse getNavHistory(UUID fundId, String period) {
         if (!fundRepository.existsById(fundId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found");
         }
@@ -88,14 +84,13 @@ public class FundService {
     }
 
     @Transactional
-    public SuccessResponse invest(UUID userId, String fundId, String type, BigDecimal amount) {
+    public SuccessResponse invest(UUID userId, UUID fundId, String type, BigDecimal amount) {
         Fund fund = fundRepository.findById(fundId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
         
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         
-        // Validate investment parameters
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amount must be greater than zero");
         }
@@ -104,14 +99,20 @@ public class FundService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Type must be either 'SIP' or 'Lumpsum'");
         }
         
-        if (type.equals("SIP") && fund.getMinSip() != null && amount.compareTo(fund.getMinSip()) < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                "Amount must be at least " + fund.getMinSip() + " for SIP");
+        if (type.equals("SIP") && fund.getMinSip() != null) {
+            BigDecimal minSipAmount = new BigDecimal(fund.getMinSip());
+            if (amount.compareTo(minSipAmount) < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Amount must be at least " + fund.getMinSip() + " for SIP");
+            }
         }
         
-        if (type.equals("Lumpsum") && fund.getMinLumpsum() != null && amount.compareTo(fund.getMinLumpsum()) < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
-                "Amount must be at least " + fund.getMinLumpsum() + " for Lumpsum");
+        if (type.equals("Lumpsum") && fund.getMinLumpsum() != null) {
+            BigDecimal minLumpsumAmount = new BigDecimal(fund.getMinLumpsum());
+            if (amount.compareTo(minLumpsumAmount) < 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                    "Amount must be at least " + fund.getMinLumpsum() + " for Lumpsum");
+            }
         }
         
         // TODO: Atomic transaction implementation:
@@ -124,12 +125,12 @@ public class FundService {
 
     @Transactional(readOnly = true)
     public BookmarkResponse getBookmarks(UUID userId) {
-        List<String> fundIds = bookmarkRepository.findFundIdsByUserId(userId);
+        List<UUID> fundIds = bookmarkRepository.findFundIdsByUserId(userId);
         return BookmarkResponse.builder().fundIds(fundIds).build();
     }
 
     @Transactional
-    public SuccessResponse addBookmark(UUID userId, String fundId) {
+    public SuccessResponse addBookmark(UUID userId, UUID fundId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         
@@ -148,17 +149,17 @@ public class FundService {
     }
 
     @Transactional
-    public SuccessResponse removeBookmark(UUID userId, String fundId) {
+    public SuccessResponse removeBookmark(UUID userId, UUID fundId) {
         bookmarkRepository.deleteByUserIdAndFundId(userId, fundId);
         return SuccessResponse.builder().success(true).build();
     }
 
-    private Fund fetchAndSaveFund(String schemeCode) {
-        Map<String, Object> apiData = mfApiService.getFundDetails(schemeCode);
+    private Fund fetchAndSaveFund(Integer schemeCode) {
+        Map<String, Object> apiData = mfApiService.getFundDetails(schemeCode.toString());
         if (apiData == null) return null;
         
         Fund fund = Fund.builder()
-            .id(schemeCode)
+            .schemeCode(schemeCode)
             .name((String) apiData.get("name"))
             .amc((String) apiData.get("amc"))
             .category((String) apiData.get("category"))
@@ -166,7 +167,6 @@ public class FundService {
             .nav((BigDecimal) apiData.get("nav"))
             .build();
         
-        // saveAndFlush ensures we use a managed/persisted fund before linking NAV history rows
         Fund persistedFund = fundRepository.saveAndFlush(fund);
         
         List<Map<String, Object>> navHistory = (List<Map<String, Object>>) apiData.get("navHistory");
@@ -220,25 +220,22 @@ public class FundService {
         if (fund == null) return null;
         return FundResponse.builder()
             .id(fund.getId())
+            .schemeCode(fund.getSchemeCode())
             .name(fund.getName())
             .amc(fund.getAmc())
             .category(fund.getCategory())
             .subcategory(fund.getSubcategory())
             .risk(fund.getRisk())
+            .description(fund.getDescription())
             .nav(fund.getNav())
             .navChange(fund.getNavChange())
             .navChangePercent(fund.getNavChangePercent())
-            .return1y(fund.getReturn1y())
-            .return3y(fund.getReturn3y())
-            .return5y(fund.getReturn5y())
-            .categoryAvg1y(fund.getCategoryAvg1y())
-            .categoryAvg3y(fund.getCategoryAvg3y())
-            .categoryAvg5y(fund.getCategoryAvg5y())
-            .minSip(fund.getMinSip())
-            .minLumpsum(fund.getMinLumpsum())
             .aum(fund.getAum())
             .expenseRatio(fund.getExpenseRatio())
-            .description(fund.getDescription())
+            .minSip(fund.getMinSip())
+            .minLumpsum(fund.getMinLumpsum())
+            .returns(fund.getReturns())
+            .categoryAvg(fund.getCategoryAvg())
             .build();
     }
 }

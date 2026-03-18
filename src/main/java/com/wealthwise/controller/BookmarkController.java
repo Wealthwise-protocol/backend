@@ -26,7 +26,7 @@ public class BookmarkController {
 
     @PostMapping("/{fundId}")
     public ResponseEntity<SuccessResponse> addBookmark(
-        @PathVariable String fundId,
+        @PathVariable UUID fundId,
         Authentication authentication
     ) {
         UUID userId = getAuthenticatedUserId(authentication);
@@ -35,7 +35,7 @@ public class BookmarkController {
 
     @DeleteMapping("/{fundId}")
     public ResponseEntity<SuccessResponse> removeBookmark(
-        @PathVariable String fundId,
+        @PathVariable UUID fundId,
         Authentication authentication
     ) {
         UUID userId = getAuthenticatedUserId(authentication);

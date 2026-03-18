@@ -26,9 +26,9 @@ public class DataSeeder implements ApplicationRunner {
     private final FundNavHistoryRepository navHistoryRepository;
     private final MfApiService mfApiService;
 
-    private static final List<String> POPULAR_SCHEMES = List.of(
-        "122639", "120503", "125354", "119598", "120465",
-        "118989", "118701", "120716", "135781"
+    private static final List<Integer> POPULAR_SCHEMES = List.of(
+        122639, 120503, 125354, 119598, 120465,
+        118989, 118701, 120716, 135781
     );
 
     @Override
@@ -40,20 +40,20 @@ public class DataSeeder implements ApplicationRunner {
         }
     }
 
-    private void seedFund(String schemeCode) {
+    private void seedFund(Integer schemeCode) {
         try {
-            if (fundRepository.existsById(schemeCode)) {
+            if (fundRepository.existsBySchemeCode(schemeCode)) {
                 return;
             }
 
-            Map<String, Object> apiData = mfApiService.getFundDetails(schemeCode);
+            Map<String, Object> apiData = mfApiService.getFundDetails(schemeCode.toString());
             if (apiData == null) {
                 log.warn("Failed to fetch data for scheme: {}", schemeCode);
                 return;
             }
 
             Fund fund = Fund.builder()
-                .id(schemeCode)
+                .schemeCode(schemeCode)
                 .name((String) apiData.get("name"))
                 .amc((String) apiData.get("amc"))
                 .category((String) apiData.get("category"))

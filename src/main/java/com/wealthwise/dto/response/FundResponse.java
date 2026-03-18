@@ -5,30 +5,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FundResponse {
-    private String id;
+    private UUID id;
+    private Integer schemeCode;
     private String name;
     private String amc;
     private String category;
     private String subcategory;
     private String risk;
+    private String description;
     private BigDecimal nav;
     private BigDecimal navChange;
     private BigDecimal navChangePercent;
-    private BigDecimal return1y;
-    private BigDecimal return3y;
-    private BigDecimal return5y;
-    private BigDecimal categoryAvg1y;
-    private BigDecimal categoryAvg3y;
-    private BigDecimal categoryAvg5y;
-    private BigDecimal minSip;
-    private BigDecimal minLumpsum;
-    private BigDecimal aum;
+    private String aum;
     private BigDecimal expenseRatio;
-    private String description;
+    private Integer minSip;
+    private Integer minLumpsum;
+    private Map<String, BigDecimal> returns;
+    private Map<String, BigDecimal> categoryAvg;
 }

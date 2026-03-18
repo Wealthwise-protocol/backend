@@ -41,7 +41,7 @@ public class NavSyncJob {
             
             fundPage.getContent().forEach(fund -> {
                 try {
-                    Map<String, Object> latestNav = mfApiService.getLatestNav(fund.getId());
+                    Map<String, Object> latestNav = mfApiService.getLatestNav(fund.getSchemeCode().toString());
                     if (latestNav != null) {
                         BigDecimal nav = (BigDecimal) latestNav.get("nav");
                         String dateStr = (String) latestNav.get("date");
@@ -64,7 +64,7 @@ public class NavSyncJob {
                         log.debug("Updated NAV for fund: {}", fund.getName());
                     }
                 } catch (Exception e) {
-                    log.error("Error updating NAV for fund: {}", fund.getId(), e);
+                    log.error("Error updating NAV for fund: {}", fund.getSchemeCode(), e);
                 }
             });
             
