@@ -4,9 +4,11 @@ import com.wealthwise.dto.request.CreateSipRequest;
 import com.wealthwise.dto.request.UpdateSipRequest;
 import com.wealthwise.dto.response.SipInstallmentResponse;
 import com.wealthwise.dto.response.SipResponse;
+import com.wealthwise.entity.Fund;
 import com.wealthwise.entity.Sip;
 import com.wealthwise.entity.SipInstallment;
 import com.wealthwise.entity.User;
+import com.wealthwise.repository.FundRepository;
 import com.wealthwise.repository.SipRepository;
 import com.wealthwise.repository.UserRepository;
 import java.time.LocalDate;
@@ -24,6 +26,7 @@ public class SipService {
 
     private final SipRepository sipRepository;
     private final UserRepository userRepository;
+    private final FundRepository fundRepository;
 
     @Transactional(readOnly = true)
     public List<SipResponse> getUserSips(UUID userId) {
@@ -35,12 +38,15 @@ public class SipService {
     @Transactional
     public SipResponse createSip(UUID userId, CreateSipRequest request) {
         User user = getUserOrThrow(userId);
+        Fund fund = fundRepository.findById(request.getFundId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
 
         LocalDate today = LocalDate.now();
 
         Sip sip = Sip.builder()
             .user(user)
-            .fundName(request.getFundName())
+            .fundId(fund.getId())
+            .fundName(fund.getName())
             .monthlyAmt(request.getMonthlyAmt())
             .startDate(today)
             .nextDebit(today.plusMonths(1))
@@ -86,6 +92,7 @@ public class SipService {
     private SipResponse toSipResponse(Sip sip) {
         return SipResponse.builder()
             .id(sip.getId())
+            .fundId(sip.getFundId())
             .fundName(sip.getFundName())
             .monthlyAmt(sip.getMonthlyAmt())
             .startDate(sip.getStartDate())
