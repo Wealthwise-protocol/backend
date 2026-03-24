@@ -12,6 +12,7 @@ import lombok.Getter;
 public class SipResponse {
 
     private UUID id;
+    private UUID fundId;
     private String fundName;
     private BigDecimal monthlyAmt;
     private LocalDate startDate;
