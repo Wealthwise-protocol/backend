@@ -13,6 +13,9 @@ import com.wealthwise.repository.FundNavHistoryRepository;
 import com.wealthwise.repository.FundRepository;
 import com.wealthwise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,12 +39,12 @@ public class FundService {
     private final MfApiService mfApiService;
 
     @Transactional
-    public List<FundResponse> searchFunds(String search, String category) {
-        List<Fund> funds = fundRepository.searchFunds(search, category);
+    public Page<FundResponse> searchFunds(String search, String category, Pageable pageable) {
+        Page<Fund> funds = fundRepository.searchFunds(search, category, pageable);
         
-        if (funds.isEmpty() && search != null && !search.isBlank()) {
+        if (funds.isEmpty() && search != null && !search.isBlank() && pageable.getPageNumber() == 0) {
             List<Map<String, Object>> apiResults = mfApiService.searchFunds(search);
-            return apiResults.stream()
+            List<FundResponse> fetchedFunds = apiResults.stream()
                 .limit(10)
                 .map(result -> {
                     Integer schemeCode = Integer.parseInt((String) result.get("id"));
@@ -51,9 +54,15 @@ public class FundService {
                 })
                 .filter(f -> f != null)
                 .collect(Collectors.toList());
+
+            int start = Math.min((int) pageable.getOffset(), fetchedFunds.size());
+            int end = Math.min(start + pageable.getPageSize(), fetchedFunds.size());
+            List<FundResponse> pageContent = fetchedFunds.subList(start, end);
+
+            return new PageImpl<>(pageContent, pageable, fetchedFunds.size());
         }
         
-        return funds.stream().map(this::toFundResponse).collect(Collectors.toList());
+        return funds.map(this::toFundResponse);
     }
 
     @Transactional
