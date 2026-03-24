@@ -38,6 +38,9 @@ public class Sip {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "fund_id")
+    private UUID fundId;
+
     @Column(name = "fund_name", nullable = false, length = 255)
     private String fundName;
 
