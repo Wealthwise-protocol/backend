@@ -36,6 +36,36 @@ Base URL (local): `http://localhost:9095`
 | POST | `/auth/forgot-password` | ❌ | Request reset token |
 | POST | `/auth/reset-password` | ❌ | Reset password |
 | DELETE | `/auth/account` | ✅ | Delete account |
+| GET | `/funds` | ✅ | List/search funds with pagination |
+| POST | `/funds` | ✅ | Get fund details by id |
+| GET | `/funds/{id}/nav-history` | ✅ | Get fund NAV history |
+| POST | `/funds/{id}/invest` | ✅ | Invest in a fund |
+
+### Funds API Pagination
+
+`GET /funds` supports pagination and filtering with query params:
+
+- `page` (default `0`, must be `>= 0`)
+- `size` (default `10`, range `1-100`)
+- `search` (optional text search by fund name)
+- `category` (optional exact category filter)
+
+Example:
+
+```bash
+curl -X GET "http://localhost:9095/funds?page=0&size=10&search=axis&category=Equity" \
+  -H "Authorization: Bearer <JWT_TOKEN>"
+```
+
+Response uses Spring Page format and includes:
+
+- `content`
+- `totalElements`
+- `totalPages`
+- `number`
+- `size`
+
+`/funds` endpoints now require a valid JWT token. Requests without token return `401 Unauthorized`.
 
 ## Local Setup
 
