@@ -163,6 +163,8 @@ public class AuthService {
 
     @Transactional
     public void deleteAccount(UUID userId) {
+        // With @OnDelete(CASCADE) annotations, related entities will be automatically deleted
+        // But we still explicitly delete tokens to ensure cleanup
         User user = getUserOrThrow(userId);
         passwordResetTokenRepository.deleteByUserId(userId);
         userRepository.delete(user);
