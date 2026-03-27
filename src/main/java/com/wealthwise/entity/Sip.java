@@ -39,8 +39,9 @@ public class Sip {
     @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private User user;
 
-    @Column(name = "fund_id")
-    private UUID fundId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fund_id")
+    private Fund fund;
 
     @Column(name = "fund_name", nullable = false, length = 255)
     private String fundName;

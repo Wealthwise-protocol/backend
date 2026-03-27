@@ -5,6 +5,7 @@ import com.wealthwise.entity.FundNavHistory;
 import com.wealthwise.repository.FundNavHistoryRepository;
 import com.wealthwise.repository.FundRepository;
 import com.wealthwise.service.MfApiService;
+import com.wealthwise.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class NavSyncJob {
     private final FundRepository fundRepository;
     private final FundNavHistoryRepository navHistoryRepository;
     private final MfApiService mfApiService;
+    private final PortfolioService portfolioService;
 
     @Scheduled(cron = "0 0 19 * * MON-FRI", zone = "Asia/Kolkata")
     public void syncNavData() {
@@ -72,6 +74,8 @@ public class NavSyncJob {
             pageNumber++;
             
         } while (fundPage.hasNext());
+
+        portfolioService.refreshAllHoldings();
         
         log.info("NAV sync job completed. Processed {} funds", totalProcessed);
     }

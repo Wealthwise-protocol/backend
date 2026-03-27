@@ -11,8 +11,10 @@ import com.wealthwise.entity.User;
 import com.wealthwise.repository.FundRepository;
 import com.wealthwise.repository.SipRepository;
 import com.wealthwise.repository.UserRepository;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ public class SipService {
     private final SipRepository sipRepository;
     private final UserRepository userRepository;
     private final FundRepository fundRepository;
+    private final MfApiService mfApiService;
+    private final PortfolioService portfolioService;
 
     @Transactional(readOnly = true)
     public List<SipResponse> getUserSips(UUID userId) {
@@ -45,7 +49,7 @@ public class SipService {
 
         Sip sip = Sip.builder()
             .user(user)
-            .fundId(fund.getId())
+            .fund(fund)
             .fundName(fund.getName())
             .monthlyAmt(request.getMonthlyAmt())
             .startDate(today)
@@ -56,6 +60,12 @@ public class SipService {
             .build();
 
         Sip saved = sipRepository.save(sip);
+        portfolioService.updateHolding(
+            userId,
+            fund.getId(),
+            request.getMonthlyAmt(),
+            resolveNavForInvestment(fund)
+        );
         return toSipResponse(saved);
     }
 
@@ -92,7 +102,7 @@ public class SipService {
     private SipResponse toSipResponse(Sip sip) {
         return SipResponse.builder()
             .id(sip.getId())
-            .fundId(sip.getFundId())
+            .fundId(sip.getFund() != null ? sip.getFund().getId() : null)
             .fundName(sip.getFundName())
             .monthlyAmt(sip.getMonthlyAmt())
             .startDate(sip.getStartDate())
@@ -111,5 +121,24 @@ public class SipService {
             .amount(installment.getAmount())
             .status(installment.getStatus())
             .build();
+    }
+
+    private BigDecimal resolveNavForInvestment(Fund fund) {
+        if (fund.getSchemeCode() != null) {
+            Map<String, Object> latestNav = mfApiService.getLatestNav(fund.getSchemeCode().toString());
+            if (latestNav != null && latestNav.get("nav") != null) {
+                Object nav = latestNav.get("nav");
+                if (nav instanceof BigDecimal value) {
+                    return value;
+                }
+                try {
+                    return new BigDecimal(nav.toString());
+                } catch (NumberFormatException ignored) {
+                    // Fall back to persisted NAV.
+                }
+            }
+        }
+
+        return fund.getNav();
     }
 }
