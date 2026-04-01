@@ -2,7 +2,6 @@ package com.wealthwise.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +11,7 @@ import lombok.Getter;
 public class SipResponse {
 
     private UUID id;
+    private UUID fundId;
     private String fundName;
     private BigDecimal monthlyAmt;
     private LocalDate startDate;
@@ -19,5 +19,4 @@ public class SipResponse {
     private BigDecimal totalInvested;
     private BigDecimal currentValue;
     private String status;
-    private List<SipInstallmentResponse> installments;
 }

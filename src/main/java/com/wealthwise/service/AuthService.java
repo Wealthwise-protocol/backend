@@ -127,29 +127,31 @@ public class AuthService {
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
         userRepository.findByEmail(normalizeEmail(request.getEmail())).ifPresent(user -> {
+            String otp = generateOtp();
+            
             PasswordResetToken token = PasswordResetToken.builder()
                 .user(user)
-                .token(UUID.randomUUID().toString())
+                .token(otp)
                 .expiresAt(LocalDateTime.now().plusMinutes(RESET_TOKEN_EXPIRY_MINUTES))
                 .used(false)
                 .build();
 
             passwordResetTokenRepository.save(token);
-            emailService.sendPasswordResetEmail(user.getEmail(), token.getToken());
+            emailService.sendPasswordResetOtp(user.getEmail(), otp);
         });
     }
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getToken())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid reset token"));
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(request.getOtp())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP"));
 
         if (Boolean.TRUE.equals(resetToken.getUsed())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reset token has already been used");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has already been used");
         }
 
         if (resetToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Reset token has expired");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP has expired");
         }
 
         User user = resetToken.getUser();
@@ -163,6 +165,8 @@ public class AuthService {
 
     @Transactional
     public void deleteAccount(UUID userId) {
+        // With @OnDelete(CASCADE) annotations, related entities will be automatically deleted
+        // But we still explicitly delete tokens to ensure cleanup
         User user = getUserOrThrow(userId);
         passwordResetTokenRepository.deleteByUserId(userId);
         userRepository.delete(user);
@@ -182,6 +186,10 @@ public class AuthService {
             return "+91";
         }
         return countryCode;
+    }
+
+    private String generateOtp() {
+        return String.format("%06d", (int) (Math.random() * 1000000));
     }
 
     private UserResponse toUserResponse(User user) {

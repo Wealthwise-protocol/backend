@@ -20,35 +20,24 @@ public class EmailService {
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-    @Value("${app.email.enabled:false}")
-    private boolean emailEnabled;
-
-    public void sendPasswordResetEmail(String toEmail, String resetToken) {
-        if (!emailEnabled) {
-            log.info("Email sending is disabled. Skipping password reset email to {}", toEmail);
-            return;
-        }
-        String resetLink = frontendUrl + "/reset-password?token=" + resetToken;
-
+    public void sendPasswordResetOtp(String toEmail, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(toEmail);
-        message.setSubject("WealthWise - Password Reset Request");
+        message.setSubject("WealthWise - Password Reset OTP");
         message.setText(
             "Hello,\n\n"
-            + "You requested a password reset for your WealthWise account.\n\n"
-            + "Click the link below to reset your password:\n"
-            + resetLink + "\n\n"
-            + "This link will expire in 15 minutes.\n\n"
+            + "Your password reset OTP is: " + otp + "\n\n"
+            + "This code will expire in 15 minutes.\n\n"
             + "If you did not request this, please ignore this email.\n\n"
             + "— WealthWise Team"
         );
 
         try {
             mailSender.send(message);
-            log.info("Password reset email sent to {}", toEmail);
+            log.info("Password reset OTP sent to {}", toEmail);
         } catch (Exception e) {
-            log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+            log.error("Failed to send password reset OTP to {}: {}", toEmail, e.getMessage());
         }
     }
 }

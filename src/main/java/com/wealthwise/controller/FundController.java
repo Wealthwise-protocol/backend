@@ -8,12 +8,15 @@ import com.wealthwise.dto.response.SuccessResponse;
 import com.wealthwise.service.FundService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
+
 import java.util.UUID;
 
 @RestController
@@ -24,11 +27,21 @@ public class FundController {
     private final FundService fundService;
 
     @GetMapping
-    public ResponseEntity<List<FundResponse>> searchFunds(
+   public ResponseEntity<Page<FundResponse>> searchFunds(
         @RequestParam(required = false) String search,
-        @RequestParam(required = false) String category
+        @RequestParam(required = false) String category,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(fundService.searchFunds(search, category));
+        if (page < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "page must be >= 0");
+        }
+        if (size <= 0 || size > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "size must be between 1 and 100");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(fundService.searchFunds(search, category, pageable));
     }
 
     @PostMapping

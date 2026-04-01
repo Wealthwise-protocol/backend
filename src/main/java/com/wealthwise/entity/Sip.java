@@ -7,13 +7,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +33,12 @@ public class Sip {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fund_id")
+    private Fund fund;
 
     @Column(name = "fund_name", nullable = false, length = 255)
     private String fundName;
@@ -58,10 +60,6 @@ public class Sip {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status;
-
-    @OneToMany(mappedBy = "sip", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<SipInstallment> installments = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

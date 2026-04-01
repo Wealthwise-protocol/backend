@@ -13,6 +13,9 @@ import com.wealthwise.repository.FundNavHistoryRepository;
 import com.wealthwise.repository.FundRepository;
 import com.wealthwise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,14 +37,15 @@ public class FundService {
     private final BookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
     private final MfApiService mfApiService;
+    private final PortfolioService portfolioService;
 
     @Transactional
-    public List<FundResponse> searchFunds(String search, String category) {
-        List<Fund> funds = fundRepository.searchFunds(search, category);
+    public Page<FundResponse> searchFunds(String search, String category, Pageable pageable) {
+        Page<Fund> funds = fundRepository.searchFunds(search, category, pageable);
         
-        if (funds.isEmpty() && search != null && !search.isBlank()) {
+        if (funds.isEmpty() && search != null && !search.isBlank() && pageable.getPageNumber() == 0) {
             List<Map<String, Object>> apiResults = mfApiService.searchFunds(search);
-            return apiResults.stream()
+            List<FundResponse> fetchedFunds = apiResults.stream()
                 .limit(10)
                 .map(result -> {
                     Integer schemeCode = Integer.parseInt((String) result.get("id"));
@@ -51,9 +55,15 @@ public class FundService {
                 })
                 .filter(f -> f != null)
                 .collect(Collectors.toList());
+
+            int start = Math.min((int) pageable.getOffset(), fetchedFunds.size());
+            int end = Math.min(start + pageable.getPageSize(), fetchedFunds.size());
+            List<FundResponse> pageContent = fetchedFunds.subList(start, end);
+
+            return new PageImpl<>(pageContent, pageable, fetchedFunds.size());
         }
         
-        return funds.stream().map(this::toFundResponse).collect(Collectors.toList());
+        return funds.map(this::toFundResponse);
     }
 
     @Transactional
@@ -88,7 +98,7 @@ public class FundService {
         Fund fund = fundRepository.findById(fundId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
         
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -119,6 +129,9 @@ public class FundService {
         // 1. Create Transaction record
         // 2. Update/Create Holding record
         // 3. If type = SIP, create SIP schedule
+
+        BigDecimal latestNav = resolveLatestNav(fund);
+        portfolioService.updateHolding(userId, fund.getId(), amount, latestNav);
         
         return SuccessResponse.builder().success(true).build();
     }
@@ -237,5 +250,27 @@ public class FundService {
             .returns(fund.getReturns())
             .categoryAvg(fund.getCategoryAvg())
             .build();
+    }
+
+    private BigDecimal resolveLatestNav(Fund fund) {
+        if (fund.getSchemeCode() != null) {
+            Map<String, Object> latestNav = mfApiService.getLatestNav(fund.getSchemeCode().toString());
+            if (latestNav != null && latestNav.get("nav") != null) {
+                Object navValue = latestNav.get("nav");
+                if (navValue instanceof BigDecimal bigDecimal) {
+                    return bigDecimal;
+                }
+                try {
+                    return new BigDecimal(navValue.toString());
+                } catch (NumberFormatException ignored) {
+                    // Fall back to stored NAV.
+                }
+            }
+        }
+
+        if (fund.getNav() == null || fund.getNav().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "NAV unavailable for investment");
+        }
+        return fund.getNav();
     }
 }

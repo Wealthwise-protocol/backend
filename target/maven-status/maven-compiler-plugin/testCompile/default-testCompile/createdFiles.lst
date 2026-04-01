@@ -1,2 +1,4 @@
 com\wealthwise\security\JwtServiceTest.class
+com\wealthwise\OtpValidationTest.class
+com\wealthwise\OtpGenerationTest.class
 com\wealthwise\WealthwiseBackendApplicationTests.class

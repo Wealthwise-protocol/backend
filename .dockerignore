@@ -1,0 +1,14 @@
+target/
+.git/
+.gitignore
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+HELP.md
+README.md
+DEPLOYMENT.md
+POSTMAN_GUIDE.md
+POSTMAN_TESTING.md
+push-feature.sh

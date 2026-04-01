@@ -34,6 +34,7 @@ public class SecurityConfig {
                     "/auth/signin",
                     "/auth/forgot-password",
                     "/auth/reset-password",
+                    
                     "/error"
                 ).permitAll()
                 .anyRequest().authenticated()

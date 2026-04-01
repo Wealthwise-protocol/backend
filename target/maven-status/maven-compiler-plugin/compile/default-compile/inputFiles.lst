@@ -1,48 +1,70 @@
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\config\CorsConfig.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\config\DataSeeder.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\config\NavSyncJob.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\config\SecurityConfig.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\controller\AuthController.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\controller\BookmarkController.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\controller\FundController.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\controller\GlobalExceptionHandler.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\controller\SipController.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\ChangePasswordRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\CreateSipRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\ForgotPasswordRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\FundDetailsRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\InvestFundRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\ResetPasswordRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\SignInRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\SignUpRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\UpdateProfileRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\request\UpdateSipRequest.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\BookmarkResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\FundResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\NavHistoryResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\SipInstallmentResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\SipResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\SuccessResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\dto\response\UserResponse.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\Bookmark.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\Fund.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\FundNavHistory.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\PasswordResetToken.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\Sip.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\SipInstallment.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\entity\User.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\BookmarkRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\FundNavHistoryRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\FundRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\PasswordResetTokenRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\SipInstallmentRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\SipRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\repository\UserRepository.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\security\JwtAuthenticationFilter.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\security\JwtService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\service\AuthService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\service\EmailService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\service\FundService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\service\MfApiService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\service\SipService.java
-C:\Users\Mohammed Omar\Downloads\Backend of Wealthwise\backend\SIP module Backend\src\main\java\com\wealthwise\WealthwiseBackendApplication.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\config\CorsConfig.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\config\DataSeeder.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\config\NavSyncJob.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\config\SecurityConfig.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\AuthController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\BookmarkController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\FundController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\GlobalExceptionHandler.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\PaymentController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\PortfolioController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\SipController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\controller\TransactionController.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\ChangePasswordRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\CreatePaymentRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\CreateSipRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\CreateTransactionRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\ForgotPasswordRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\FundDetailsRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\InvestFundRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\ProcessPaymentRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\ResetPasswordRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\SignInRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\SignUpRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\UpdateProfileRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\UpdateSipRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\request\UpsertHoldingRequest.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\AllocationResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\BookmarkResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\FundResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\HistoryResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\HoldingResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\NavHistoryResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\PaymentResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\PortfolioSummaryResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\SipInstallmentResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\SipResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\SuccessResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\TransactionResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\dto\response\UserResponse.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Bookmark.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Fund.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\FundNavHistory.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Holding.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\PasswordResetToken.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Payment.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Sip.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\SipInstallment.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\Transaction.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\entity\User.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\BookmarkRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\FundNavHistoryRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\FundRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\HoldingRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\PasswordResetTokenRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\PaymentRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\SipInstallmentRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\SipRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\TransactionRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\repository\UserRepository.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\security\JwtAuthenticationFilter.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\security\JwtService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\AuthService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\EmailService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\FundService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\MfApiService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\PaymentService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\PortfolioService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\SipService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\service\TransactionService.java
+C:\Users\Mohammed Omar\Downloads\backend-feature-user-auth-module (4)\krish part44\src\main\java\com\wealthwise\WealthwiseBackendApplication.java
