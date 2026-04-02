@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -137,7 +138,11 @@ public class AuthService {
                 .build();
 
             passwordResetTokenRepository.save(token);
-            emailService.sendPasswordResetOtp(user.getEmail(), otp);
+            try {
+                emailService.sendPasswordResetOtp(user.getEmail(), otp);
+            } catch (MailException ex) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to send OTP email. Please try again.");
+            }
         });
     }
 

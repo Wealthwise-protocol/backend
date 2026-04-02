@@ -2,6 +2,7 @@ package com.wealthwise.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailSendException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,7 +38,8 @@ public class EmailService {
             mailSender.send(message);
             log.info("Password reset OTP sent to {}", toEmail);
         } catch (Exception e) {
-            log.error("Failed to send password reset OTP to {}: {}", toEmail, e.getMessage());
+            log.error("Failed to send password reset OTP to {}", toEmail, e);
+            throw new MailSendException("Failed to send password reset OTP", e);
         }
     }
 }
