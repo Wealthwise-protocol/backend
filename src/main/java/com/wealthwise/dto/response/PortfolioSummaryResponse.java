@@ -10,7 +10,7 @@ public class PortfolioSummaryResponse {
 
     private BigDecimal totalInvested;
     private BigDecimal currentValue;
-    private BigDecimal totalReturns;
-    private BigDecimal returnsPercent;
+    private BigDecimal totalGain;
+    private BigDecimal gainPercent;
 }
 

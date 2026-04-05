@@ -8,8 +8,10 @@ import com.wealthwise.entity.Fund;
 import com.wealthwise.entity.Sip;
 import com.wealthwise.entity.SipInstallment;
 import com.wealthwise.entity.User;
+import com.wealthwise.entity.Transaction;
 import com.wealthwise.repository.FundRepository;
 import com.wealthwise.repository.SipRepository;
+import com.wealthwise.repository.TransactionRepository;
 import com.wealthwise.repository.UserRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +31,7 @@ public class SipService {
     private final SipRepository sipRepository;
     private final UserRepository userRepository;
     private final FundRepository fundRepository;
+    private final TransactionRepository transactionRepository;
     private final MfApiService mfApiService;
     private final PortfolioService portfolioService;
 
@@ -53,26 +56,69 @@ public class SipService {
             .fundName(fund.getName())
             .monthlyAmt(request.getMonthlyAmt())
             .startDate(today)
-            .nextDebit(today.plusMonths(1))
-            .totalInvested(java.math.BigDecimal.ZERO)
-            .currentValue(java.math.BigDecimal.ZERO)
+            .nextDebit(today)
+            .totalInvested(BigDecimal.ZERO)
+            .currentValue(BigDecimal.ZERO)
             .status("ACTIVE")
             .build();
 
         Sip saved = sipRepository.save(sip);
-        portfolioService.updateHolding(
-            userId,
-            fund.getId(),
-            request.getMonthlyAmt(),
-            resolveNavForInvestment(fund)
-        );
+        processInstallment(saved);
         return toSipResponse(saved);
+    }
+
+    @Transactional
+    public void processInstallment(Sip sip) {
+        BigDecimal amount = sip.getMonthlyAmt();
+        Fund fund = sip.getFund();
+        UUID userId = sip.getUser().getId();
+
+        BigDecimal nav = resolveNavForInvestment(fund);
+        BigDecimal units = (nav != null && nav.compareTo(BigDecimal.ZERO) > 0)
+            ? amount.divide(nav, 8, java.math.RoundingMode.HALF_UP)
+            : BigDecimal.ZERO;
+
+        SipInstallment installment = SipInstallment.builder()
+            .sip(sip)
+            .installmentDate(LocalDate.now())
+            .amount(amount)
+            .nav(nav)
+            .units(units)
+            .status("COMPLETED")
+            .build();
+        sip.getInstallments().add(installment);
+
+        sip.setTotalInvested(sip.getTotalInvested().add(amount));
+
+        portfolioService.updateHolding(userId, fund.getId(), amount, nav);
+
+        Transaction transaction = Transaction.builder()
+            .user(sip.getUser())
+            .fund(fund)
+            .fundName(fund.getName())
+            .type("SIP")
+            .date(LocalDate.now())
+            .amount(amount)
+            .nav(nav)
+            .units(units)
+            .status("Success")
+            .build();
+        transactionRepository.save(transaction);
+
+        sip.setNextDebit(sip.getNextDebit().plusMonths(1));
+        sip.setCurrentValue(sip.getTotalInvested());
+
+        sipRepository.save(sip);
     }
 
     @Transactional
     public SipResponse updateSip(UUID userId, UpdateSipRequest request) {
         Sip sip = sipRepository.findByIdAndUserId(request.getSipId(), userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SIP not found"));
+
+        if ("CANCELLED".equals(sip.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot update a cancelled SIP");
+        }
 
         if (request.getMonthlyAmt() != null) {
             sip.setMonthlyAmt(request.getMonthlyAmt());
@@ -87,11 +133,13 @@ public class SipService {
     }
 
     @Transactional
-    public void deleteSip(UUID userId, UUID sipId) {
+    public SipResponse deleteSip(UUID userId, UUID sipId) {
         Sip sip = sipRepository.findByIdAndUserId(sipId, userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SIP not found"));
 
-        sipRepository.delete(sip);
+        sip.setStatus("CANCELLED");
+        Sip saved = sipRepository.save(sip);
+        return toSipResponse(saved);
     }
 
     private User getUserOrThrow(UUID userId) {
@@ -119,6 +167,8 @@ public class SipService {
             .id(installment.getId())
             .installmentDate(installment.getInstallmentDate())
             .amount(installment.getAmount())
+            .nav(installment.getNav())
+            .units(installment.getUnits())
             .status(installment.getStatus())
             .build();
     }

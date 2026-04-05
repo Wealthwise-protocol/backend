@@ -1,6 +1,7 @@
 package com.wealthwise.repository;
 
 import com.wealthwise.entity.Sip;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,4 +14,8 @@ public interface SipRepository extends JpaRepository<Sip, UUID> {
     List<Sip> findByUserId(UUID userId);
 
     Optional<Sip> findByIdAndUserId(UUID id, UUID userId);
+
+    List<Sip> findByStatusAndNextDebitLessThanEqual(String status, LocalDate date);
+
+    List<Sip> findByStatus(String status);
 }

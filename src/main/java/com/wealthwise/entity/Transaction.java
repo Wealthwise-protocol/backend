@@ -18,26 +18,36 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "sip_installments")
+@Table(name = "transactions")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SipInstallment {
+public class Transaction {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "sip_id", nullable = false)
-    private Sip sip;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "installment_date", nullable = false)
-    private LocalDate installmentDate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fund_id")
+    private Fund fund;
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "fund_name", nullable = false)
+    private String fundName;
+
+    @Column(name = "type", nullable = false, length = 20)
+    private String type;
+
+    @Column(name = "transaction_date", nullable = false)
+    private LocalDate date;
+
+    @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @Column(name = "nav", precision = 19, scale = 6)
@@ -53,9 +63,6 @@ public class SipInstallment {
     public void prePersist() {
         if (id == null) {
             id = UUID.randomUUID();
-        }
-        if (status == null || status.isBlank()) {
-            status = "PENDING";
         }
     }
 }

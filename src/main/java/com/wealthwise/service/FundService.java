@@ -8,9 +8,11 @@ import com.wealthwise.entity.Bookmark;
 import com.wealthwise.entity.Fund;
 import com.wealthwise.entity.FundNavHistory;
 import com.wealthwise.entity.User;
+import com.wealthwise.entity.Transaction;
 import com.wealthwise.repository.BookmarkRepository;
 import com.wealthwise.repository.FundNavHistoryRepository;
 import com.wealthwise.repository.FundRepository;
+import com.wealthwise.repository.TransactionRepository;
 import com.wealthwise.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class FundService {
     private final FundNavHistoryRepository navHistoryRepository;
     private final BookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
     private final MfApiService mfApiService;
     private final PortfolioService portfolioService;
 
@@ -98,9 +101,9 @@ public class FundService {
         Fund fund = fundRepository.findById(fundId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
         
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        
+
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amount must be greater than zero");
         }
@@ -125,14 +128,24 @@ public class FundService {
             }
         }
         
-        // TODO: Atomic transaction implementation:
-        // 1. Create Transaction record
-        // 2. Update/Create Holding record
-        // 3. If type = SIP, create SIP schedule
-
         BigDecimal latestNav = resolveLatestNav(fund);
+        BigDecimal units = amount.divide(latestNav, 8, java.math.RoundingMode.HALF_UP);
+
         portfolioService.updateHolding(userId, fund.getId(), amount, latestNav);
-        
+
+        Transaction transaction = Transaction.builder()
+            .user(user)
+            .fund(fund)
+            .fundName(fund.getName())
+            .type(type)
+            .date(LocalDate.now())
+            .amount(amount)
+            .nav(latestNav)
+            .units(units)
+            .status("Success")
+            .build();
+        transactionRepository.save(transaction);
+
         return SuccessResponse.builder().success(true).build();
     }
 

@@ -4,6 +4,7 @@ import com.wealthwise.dto.request.UpsertHoldingRequest;
 import com.wealthwise.dto.response.AllocationResponse;
 import com.wealthwise.dto.response.HistoryResponse;
 import com.wealthwise.dto.response.HoldingResponse;
+import com.wealthwise.dto.response.PortfolioAllDetailsResponse;
 import com.wealthwise.dto.response.PortfolioSummaryResponse;
 import jakarta.validation.Valid;
 import com.wealthwise.entity.User;
@@ -32,6 +33,20 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
     private final UserRepository userRepository;
+
+    @GetMapping("/all-details")
+    public ResponseEntity<PortfolioAllDetailsResponse> getAllDetails(
+        @RequestParam(defaultValue = "1Y") String period
+    ) {
+        UUID userId = getAuthenticatedUserId();
+        PortfolioAllDetailsResponse response = PortfolioAllDetailsResponse.builder()
+            .holdings(portfolioService.getHoldings(userId))
+            .portfolioHistory(portfolioService.getHistory(userId, period))
+            .assetAllocation(portfolioService.getAllocation(userId))
+            .summary(portfolioService.getSummary(userId))
+            .build();
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/holdings")
     public ResponseEntity<Map<String, List<HoldingResponse>>> getHoldings() {

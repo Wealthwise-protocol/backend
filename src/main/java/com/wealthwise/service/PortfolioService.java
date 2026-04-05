@@ -110,8 +110,8 @@ public class PortfolioService {
             return PortfolioSummaryResponse.builder()
                 .totalInvested(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
                 .currentValue(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
-                .totalReturns(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
-                .returnsPercent(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
+                .totalGain(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
+                .gainPercent(BigDecimal.ZERO.setScale(MONEY_SCALE, RoundingMode.HALF_UP))
                 .build();
         }
 
@@ -133,8 +133,8 @@ public class PortfolioService {
         return PortfolioSummaryResponse.builder()
             .totalInvested(invested)
             .currentValue(currentValue)
-            .totalReturns(returns)
-            .returnsPercent(returnsPercent)
+            .totalGain(returns)
+            .gainPercent(returnsPercent)
             .build();
     }
 

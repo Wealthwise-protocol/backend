@@ -58,13 +58,13 @@ public class SipController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Map<String, Boolean>> deleteSip(
+    public ResponseEntity<Map<String, SipResponse>> deleteSip(
         @AuthenticationPrincipal String userId,
         @RequestParam("id") UUID sipId
     ) {
         UUID userUuid = getAuthenticatedUserId(userId);
-        sipService.deleteSip(userUuid, sipId);
-        return ResponseEntity.ok(Map.of("success", true));
+        SipResponse response = sipService.deleteSip(userUuid, sipId);
+        return ResponseEntity.ok(Map.of("sip", response));
     }
 
     private UUID getAuthenticatedUserId(String userId) {

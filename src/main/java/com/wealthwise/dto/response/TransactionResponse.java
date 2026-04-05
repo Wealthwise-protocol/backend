@@ -8,10 +8,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SipInstallmentResponse {
+public class TransactionResponse {
 
     private UUID id;
-    private LocalDate installmentDate;
+    private LocalDate date;
+    private String fundName;
+    private String type;
     private BigDecimal amount;
     private BigDecimal nav;
     private BigDecimal units;
