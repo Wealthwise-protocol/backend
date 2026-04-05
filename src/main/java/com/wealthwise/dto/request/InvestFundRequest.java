@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 @Data
 public class InvestFundRequest {
-    @NotBlank(message = "Investment type is required")
     private String type;
 
     @NotNull(message = "Investment amount is required")

@@ -71,7 +71,7 @@ public class PortfolioController {
         @RequestParam(defaultValue = "1Y") String period
     ) {
         UUID userId = getAuthenticatedUserId();
-        return ResponseEntity.ok(Map.of("history", portfolioService.getHistory(userId, period)));
+        return ResponseEntity.ok(Map.of("portfolioHistory", portfolioService.getHistory(userId, period)));
     }
 
     @PostMapping("/holdings")

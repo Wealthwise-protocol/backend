@@ -4,9 +4,10 @@ import com.wealthwise.dto.request.FundDetailsRequest;
 import com.wealthwise.dto.request.InvestFundRequest;
 import com.wealthwise.dto.response.FundResponse;
 import com.wealthwise.dto.response.NavHistoryResponse;
-import com.wealthwise.dto.response.SuccessResponse;
+import com.wealthwise.dto.response.TransactionResponse;
 import com.wealthwise.service.FundService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,13 +59,15 @@ public class FundController {
     }
 
     @PostMapping("/{id}/invest")
-    public ResponseEntity<SuccessResponse> invest(
+    public ResponseEntity<Map<String, TransactionResponse>> invest(
         @PathVariable UUID id,
         @Valid @RequestBody InvestFundRequest request,
         Authentication authentication
     ) {
         UUID userId = getAuthenticatedUserId(authentication);
-        return ResponseEntity.ok(fundService.invest(userId, id, request.getType(), request.getAmount()));
+        String type = request.getType() != null ? request.getType() : "Lumpsum";
+        TransactionResponse response = fundService.invest(userId, id, type, request.getAmount());
+        return ResponseEntity.ok(Map.of("transaction", response));
     }
 
     private UUID getAuthenticatedUserId(Authentication authentication) {

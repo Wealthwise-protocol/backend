@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NavHistoryResponse {
-    private List<NavDataPoint> data;
+    private List<NavDataPoint> navHistory;
 
     @Data
     @Builder

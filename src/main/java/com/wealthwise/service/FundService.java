@@ -4,6 +4,7 @@ import com.wealthwise.dto.response.BookmarkResponse;
 import com.wealthwise.dto.response.FundResponse;
 import com.wealthwise.dto.response.NavHistoryResponse;
 import com.wealthwise.dto.response.SuccessResponse;
+import com.wealthwise.dto.response.TransactionResponse;
 import com.wealthwise.entity.Bookmark;
 import com.wealthwise.entity.Fund;
 import com.wealthwise.entity.FundNavHistory;
@@ -93,11 +94,11 @@ public class FundService {
                 .build())
             .collect(Collectors.toList());
         
-        return NavHistoryResponse.builder().data(dataPoints).build();
+        return NavHistoryResponse.builder().navHistory(dataPoints).build();
     }
 
     @Transactional
-    public SuccessResponse invest(UUID userId, UUID fundId, String type, BigDecimal amount) {
+    public TransactionResponse invest(UUID userId, UUID fundId, String type, BigDecimal amount) {
         Fund fund = fundRepository.findById(fundId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fund not found"));
         
@@ -144,9 +145,18 @@ public class FundService {
             .units(units)
             .status("Success")
             .build();
-        transactionRepository.save(transaction);
+        Transaction saved = transactionRepository.save(transaction);
 
-        return SuccessResponse.builder().success(true).build();
+        return TransactionResponse.builder()
+            .id(saved.getId())
+            .date(saved.getDate())
+            .fundName(saved.getFundName())
+            .type(saved.getType())
+            .amount(saved.getAmount())
+            .nav(saved.getNav())
+            .units(saved.getUnits())
+            .status(saved.getStatus())
+            .build();
     }
 
     @Transactional(readOnly = true)
