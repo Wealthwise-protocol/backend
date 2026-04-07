@@ -38,6 +38,7 @@ public class SecurityConfig {
                     "/error",
                     "/health"
                 ).permitAll()
+                .requestMatchers("/api/ai/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
