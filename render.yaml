@@ -25,19 +25,19 @@ services:
       - key: MAIL_HOST
         value: "smtp.gmail.com"
       - key: MAIL_PORT
-        value: "587"
+        value: "465"
       - key: MAIL_SMTP_STARTTLS_ENABLE
-        value: "true"
-      - key: MAIL_SMTP_STARTTLS_REQUIRED
-        value: "true"
-      - key: MAIL_SMTP_SSL_ENABLE
         value: "false"
+      - key: MAIL_SMTP_STARTTLS_REQUIRED
+        value: "false"
+      - key: MAIL_SMTP_SSL_ENABLE
+        value: "true"
       - key: MAIL_SMTP_CONNECTION_TIMEOUT
-        value: "10000"
+        value: "15000"
       - key: MAIL_SMTP_TIMEOUT
-        value: "10000"
+        value: "15000"
       - key: MAIL_SMTP_WRITE_TIMEOUT
-        value: "10000"
+        value: "15000"
       - key: FRONTEND_URL
         value: "https://frontend.sathyamrock55.workers.dev"
       - key: SPRING_JPA_SHOW_SQL
