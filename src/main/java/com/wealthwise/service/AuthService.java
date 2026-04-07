@@ -12,11 +12,14 @@ import com.wealthwise.entity.User;
 import com.wealthwise.repository.PasswordResetTokenRepository;
 import com.wealthwise.repository.UserRepository;
 import com.wealthwise.security.JwtService;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
 
     private static final long RESET_TOKEN_EXPIRY_MINUTES = 15L;
+    private static final int MAX_OTP_GENERATION_ATTEMPTS = 10;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -127,17 +132,15 @@ public class AuthService {
     @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
         userRepository.findByEmail(normalizeEmail(request.getEmail())).ifPresent(user -> {
-            String otp = generateOtp();
-            
-            PasswordResetToken token = PasswordResetToken.builder()
-                .user(user)
-                .token(otp)
-                .expiresAt(LocalDateTime.now().plusMinutes(RESET_TOKEN_EXPIRY_MINUTES))
-                .used(false)
-                .build();
+            // Keep only one active token per user to prevent stale-link ambiguity.
+            passwordResetTokenRepository.deleteByUserId(user.getId());
 
-            passwordResetTokenRepository.save(token);
-            emailService.sendPasswordResetOtp(user.getEmail(), otp);
+            String otp = createAndStoreUniqueOtp(user);
+            try {
+                emailService.sendPasswordResetOtp(user.getEmail(), otp);
+            } catch (MailException ex) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send OTP email");
+            }
         });
     }
 
@@ -188,8 +191,34 @@ public class AuthService {
         return countryCode;
     }
 
-    private String generateOtp() {
-        return String.format("%06d", (int) (Math.random() * 1000000));
+    private String generateUniqueOtp() {
+        String otp;
+        do {
+            otp = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+        } while (passwordResetTokenRepository.findByToken(otp).isPresent());
+        return otp;
+    }
+
+    private String createAndStoreUniqueOtp(User user) {
+        for (int attempt = 1; attempt <= MAX_OTP_GENERATION_ATTEMPTS; attempt++) {
+            String otp = generateUniqueOtp();
+            PasswordResetToken token = PasswordResetToken.builder()
+                .user(user)
+                .token(otp)
+                .expiresAt(LocalDateTime.now().plusMinutes(RESET_TOKEN_EXPIRY_MINUTES))
+                .used(false)
+                .build();
+            try {
+                passwordResetTokenRepository.save(token);
+                return otp;
+            } catch (DataIntegrityViolationException ex) {
+                // Rare race/collision case, retry with a fresh OTP.
+                if (attempt == MAX_OTP_GENERATION_ATTEMPTS) {
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate OTP");
+                }
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to generate OTP");
     }
 
     private UserResponse toUserResponse(User user) {

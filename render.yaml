@@ -23,6 +23,6 @@ services:
       - key: MAIL_PASSWORD
         sync: false
       - key: FRONTEND_URL
-        value: "https://frontend.sathyamrock55.workers.dev,http://localhost:5173"
+        value: "https://frontend.sathyamrock55.workers.dev"
       - key: SPRING_JPA_SHOW_SQL
         value: "false"
