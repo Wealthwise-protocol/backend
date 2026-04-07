@@ -26,6 +26,12 @@ services:
         value: "smtp.gmail.com"
       - key: MAIL_PORT
         value: "587"
+      - key: MAIL_SMTP_STARTTLS_ENABLE
+        value: "true"
+      - key: MAIL_SMTP_STARTTLS_REQUIRED
+        value: "true"
+      - key: MAIL_SMTP_SSL_ENABLE
+        value: "false"
       - key: MAIL_SMTP_CONNECTION_TIMEOUT
         value: "10000"
       - key: MAIL_SMTP_TIMEOUT
