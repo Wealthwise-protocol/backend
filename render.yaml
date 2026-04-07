@@ -22,6 +22,16 @@ services:
         sync: false
       - key: MAIL_PASSWORD
         sync: false
+      - key: MAIL_HOST
+        value: "smtp.gmail.com"
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_SMTP_CONNECTION_TIMEOUT
+        value: "10000"
+      - key: MAIL_SMTP_TIMEOUT
+        value: "10000"
+      - key: MAIL_SMTP_WRITE_TIMEOUT
+        value: "10000"
       - key: FRONTEND_URL
         value: "https://frontend.sathyamrock55.workers.dev"
       - key: SPRING_JPA_SHOW_SQL
