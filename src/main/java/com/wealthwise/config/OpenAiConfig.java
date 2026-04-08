@@ -12,10 +12,14 @@ public class OpenAiConfig {
     @Value("${openai.api-key}")
     private String apiKey;
 
+    @Value("${openai.base-url:https://api.openai.com/v1}")
+    private String baseUrl;
+
     @Bean
     public OpenAIClient openAIClient() {
         return OpenAIOkHttpClient.builder()
                 .apiKey(apiKey)
+                .baseUrl(baseUrl)
                 .build();
     }
 }

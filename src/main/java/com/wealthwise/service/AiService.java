@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +105,47 @@ public class AiService {
             log.error("OpenAI API call failed", e);
             chatMessageRepository.delete(userMessage);
             throw new RuntimeException("AI service unavailable");
+        }
+    }
+
+    @Cacheable(value = "insights", key = "#userId")
+    @Transactional(readOnly = true)
+    public String getInsight(UUID userId) {
+        User user = findUser(userId);
+
+        List<Holding> holdings = holdingRepository.findByUserId(userId);
+        List<Sip> sips = sipRepository.findByUserId(userId);
+        PortfolioSummaryResponse summary = portfolioService.getSummary(userId);
+        List<Fund> funds = fundRepository.findAll();
+
+        String systemPrompt = "You are X, a financial co-pilot for Indian mutual fund investors on WealthWise.\n"
+                + "Analyse this user's portfolio data and return exactly ONE short, specific, actionable insight.\n"
+                + "Rules:\n"
+                + "- Maximum 2 sentences\n"
+                + "- Be specific — mention actual fund names, actual numbers from their data\n"
+                + "- Focus on the most important thing you notice: concentration risk, paused SIPs, "
+                + "underperforming funds, good performance worth acknowledging, missing debt allocation, high expense ratios\n"
+                + "- Do not start with 'I' or 'Your portfolio'\n"
+                + "- Do not ask a question\n"
+                + "- Do not add a disclaimer\n"
+                + "- Sound like a smart friend, not a robot\n"
+                + "Return only the insight text. No JSON, no formatting, just plain text.";
+
+        String portfolioContext = buildPortfolioContext(user, holdings, sips, summary, funds);
+
+        try {
+            ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+                    .model(ChatModel.of(model))
+                    .maxCompletionTokens(150)
+                    .addSystemMessage(systemPrompt)
+                    .addUserMessage(portfolioContext)
+                    .build();
+
+            ChatCompletion completion = openAIClient.chat().completions().create(params);
+            return completion.choices().get(0).message().content().orElse("");
+        } catch (Exception e) {
+            log.error("OpenAI insight call failed: {} - {}", e.getClass().getSimpleName(), e.getMessage(), e);
+            throw new RuntimeException("AI service unavailable: " + e.getMessage());
         }
     }
 
@@ -239,6 +281,70 @@ public class AiService {
                 }
                 sb.append("\n");
             }
+        }
+
+        return sb.toString();
+    }
+
+    private String buildPortfolioContext(User user, List<Holding> holdings, List<Sip> sips,
+                                        PortfolioSummaryResponse summary, List<Fund> funds) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("User: ").append(user.getFirstName()).append(" ").append(user.getLastName()).append("\n\n");
+
+        sb.append("Portfolio Summary:\n");
+        if (summary.getTotalInvested().compareTo(BigDecimal.ZERO) == 0) {
+            sb.append("No investments yet.\n\n");
+        } else {
+            sb.append("Invested: ₹").append(formatAmount(summary.getTotalInvested()))
+                    .append(" | Current: ₹").append(formatAmount(summary.getCurrentValue()))
+                    .append(" | Returns: ₹").append(formatAmount(summary.getTotalGain()))
+                    .append(" (").append(summary.getGainPercent()).append("%)\n\n");
+        }
+
+        sb.append("Holdings:\n");
+        if (holdings.isEmpty()) {
+            sb.append("None.\n\n");
+        } else {
+            for (Holding h : holdings) {
+                BigDecimal gainPercent = h.getInvested().compareTo(BigDecimal.ZERO) == 0
+                        ? BigDecimal.ZERO
+                        : h.getCurValue().subtract(h.getInvested())
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(h.getInvested(), 2, RoundingMode.HALF_UP);
+                sb.append("- ").append(h.getName())
+                        .append(" (").append(h.getCategory()).append(")")
+                        .append(" | ₹").append(formatAmount(h.getInvested()))
+                        .append(" → ₹").append(formatAmount(h.getCurValue()))
+                        .append(" (").append(gainPercent).append("%)\n");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("SIPs:\n");
+        if (sips.isEmpty()) {
+            sb.append("None.\n\n");
+        } else {
+            for (Sip s : sips) {
+                sb.append("- ").append(s.getFundName())
+                        .append(" | ₹").append(formatAmount(s.getMonthlyAmt()))
+                        .append("/mo | ").append(s.getStatus())
+                        .append(" | Next: ").append(s.getNextDebit()).append("\n");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("Available Funds:\n");
+        for (Fund f : funds) {
+            sb.append("- ").append(f.getName());
+            if (f.getReturns() != null) {
+                Map<String, BigDecimal> r = f.getReturns();
+                sb.append(" | 5Y: ").append(r.getOrDefault("5Y", BigDecimal.ZERO)).append("%");
+            }
+            if (f.getExpenseRatio() != null) {
+                sb.append(" | ER: ").append(f.getExpenseRatio()).append("%");
+            }
+            sb.append("\n");
         }
 
         return sb.toString();

@@ -2,6 +2,7 @@ package com.wealthwise.controller;
 
 import com.wealthwise.dto.request.ChatRequest;
 import com.wealthwise.dto.response.ChatResponse;
+import com.wealthwise.dto.response.InsightResponse;
 import com.wealthwise.dto.response.MessageDto;
 import com.wealthwise.service.AiService;
 import jakarta.validation.Valid;
@@ -35,6 +36,15 @@ public class AiController {
         UUID userUuid = getAuthenticatedUserId(userId);
         String response = aiService.chat(userUuid, request.getMessage());
         return ResponseEntity.ok(ChatResponse.builder().response(response).build());
+    }
+
+    @GetMapping("/insight")
+    public ResponseEntity<InsightResponse> getInsight(
+            @AuthenticationPrincipal String userId
+    ) {
+        UUID userUuid = getAuthenticatedUserId(userId);
+        String insight = aiService.getInsight(userUuid);
+        return ResponseEntity.ok(InsightResponse.builder().insight(insight).build());
     }
 
     @GetMapping("/history")
