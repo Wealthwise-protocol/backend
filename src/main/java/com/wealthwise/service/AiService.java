@@ -21,6 +21,7 @@ import com.wealthwise.repository.TransactionRepository;
 import com.wealthwise.repository.UserRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,9 +52,18 @@ public class AiService {
     @Value("${openai.model}")
     private String model;
 
+    private static final int DAILY_CHAT_LIMIT = 5;
+
     @Transactional
     public String chat(UUID userId, String message) {
         User user = findUser(userId);
+
+        long todayCount = chatMessageRepository.countByUserIdAndRoleAndCreatedAtAfter(
+                userId, "user", LocalDate.now().atStartOfDay());
+        if (todayCount >= DAILY_CHAT_LIMIT) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "Daily chat limit reached (" + DAILY_CHAT_LIMIT + " messages). Try again tomorrow.");
+        }
 
         ChatMessage userMessage = ChatMessage.builder()
                 .user(user)
