@@ -19,7 +19,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private static final long RESET_TOKEN_EXPIRY_MINUTES = 15L;
+    private static final long RESET_TOKEN_EXPIRY_MINUTES = 10L;
     private static final int MAX_OTP_GENERATION_ATTEMPTS = 10;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -138,7 +137,7 @@ public class AuthService {
             String otp = createAndStoreUniqueOtp(user);
             try {
                 emailService.sendPasswordResetOtp(user.getEmail(), otp);
-            } catch (MailException ex) {
+            } catch (Exception ex) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send OTP email");
             }
         });
