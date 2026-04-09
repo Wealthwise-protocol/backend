@@ -1,0 +1,47 @@
+name: Deploy Backend to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests
+
+      - name: Copy JAR to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.BACKEND_VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.BACKEND_VM_SSH_KEY }}
+          source: "target/*.jar"
+          target: "/opt/wealthwise"
+          strip_components: 1
+
+      - name: Rename and restart service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.BACKEND_VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.BACKEND_VM_SSH_KEY }}
+          script: |
+            mv /opt/wealthwise/*.jar /opt/wealthwise/app.jar
+            sudo systemctl restart wealthwise
+            sleep 10
+            sudo systemctl status wealthwise
